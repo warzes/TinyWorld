@@ -14,7 +14,13 @@ private:
 
 	ShaderProgramRef m_shader;
 	Uniform m_uniformProjectionMatrix;
+	Uniform m_uniformViewMatrix;
+	Uniform m_uniformWorldMatrix;
+	Uniform m_uniformLightDirection;
+
+	GeometryBufferRef m_geom;
+	Texture2DRef m_texture;
+
 	glm::mat4 m_perspective;
-	GPUBufferRef m_vb;
-	VertexArrayRef m_vao;
+	Camera m_camera;
 };
