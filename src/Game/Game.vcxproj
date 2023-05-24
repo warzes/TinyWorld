@@ -59,10 +59,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)..\TinyEngine\src\3rdparty\;$(SolutionDir)..\TinyEngine\src\Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)..\TinyEngine\src\3rdparty\;$(SolutionDir)..\TinyEngine\src\Engine\;$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\bullet\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,9 +81,10 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)..\TinyEngine\src\3rdparty\;$(SolutionDir)..\TinyEngine\src\Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)..\TinyEngine\src\3rdparty\;$(SolutionDir)..\TinyEngine\src\Engine\;$(SolutionDir)3rdparty\;$(SolutionDir)3rdparty\bullet\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,7 +95,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\3rdparty\bullet\btBulletCollisionAll.cpp" />
+    <ClCompile Include="..\3rdparty\bullet\btBulletDynamicsAll.cpp" />
+    <ClCompile Include="..\3rdparty\bullet\btLinearMathAll.cpp" />
+    <ClCompile Include="..\3rdparty\bullet\btLinearMathAll2.cpp" />
     <ClCompile Include="GameApp.cpp" />
+    <ClCompile Include="GameAppBullet.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -101,8 +108,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\3rdparty\bullet\btBulletCollisionCommon.h" />
+    <ClInclude Include="..\3rdparty\bullet\btBulletDynamicsCommon.h" />
     <ClInclude Include="GameApp.h" />
+    <ClInclude Include="GameAppBullet.h" />
     <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ref.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

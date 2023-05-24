@@ -20,7 +20,14 @@ private:
 
 	GeometryBufferRef m_geom;
 	Texture2DRef m_texture;
+	Texture2DRef m_textureRed;
+
+	ModelRef m_plane;
+	ModelRef m_box;
+	ModelRef m_sphere;
+	ModelRef m_capsule;
 
 	glm::mat4 m_perspective;
 	Camera m_camera;
+
 };

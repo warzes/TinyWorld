@@ -1,5 +1,57 @@
 #include "stdafx.h"
 #include "GameApp.h"
+
+struct Quad
+{
+	uint8_t vert[4];
+	GeometryBufferRef geom;
+	// не храню тут текстуру потому что ее можно менять, но геометрия ведь от этого не меняется
+
+	bool operator==(const Quad& other) const
+	{
+		for (size_t i = 0; i < 4; i++)
+			if (vert[i] != other.vert[i]) return false;
+
+		return true;
+	}
+};
+
+struct Block
+{
+	Quad quad[6]; // если quad[x].geom == null - то этот квад рисовать не будет. так можно например рисовать плейн
+	unsigned textureId[6];
+
+	bool operator==(const Block& other) const
+	{
+		for (size_t i = 0; i < 6; i++)
+			if (quad[i] != other.quad[i]) return false;
+
+		return true;
+	}
+};
+
+struct BlockRef
+{
+	int y;
+	Block* block;
+};
+
+struct CellData
+{
+	BlockRef block;
+	BlockRef* upperBlock; // ближайший верхний блок
+	BlockRef* downBlock; // ближайший нижний блок
+};
+
+struct Region
+{
+	CellData cells[1000][1000];
+	Region* ref[6];
+	glm::ivec3 pos;
+};
+
+constexpr int ss = sizeof(Region)/1024/1024;
+
 //-----------------------------------------------------------------------------
 bool GameApp::Create()
 {
@@ -49,7 +101,7 @@ void main()
 	float lightIntensity = clamp(dot(fNormal, lightDir), 0.0f, 1.0f);
 	vec4 diffuseLightColor = vec4(1.0, 1.0, 1.0, 1.0);
 
-	fragColor =  clamp((diffuseLightColor * lightIntensity), 0.0f, 1.0f);
+	fragColor =  clamp((diffuseLightColor * lightIntensity), 0.9f, 1.0f);
 	fragColor = fragColor * textureColor;
 }
 )";
@@ -75,7 +127,7 @@ void main()
 	};
 
 
-	glEnable(GL_CULL_FACE); // для теста - треугольник выше против часой стрелки
+	//glEnable(GL_CULL_FACE); // для теста - треугольник выше против часой стрелки
 
 	auto& renderSystem = GetRenderSystem();
 
@@ -88,8 +140,15 @@ void main()
 	m_geom = renderSystem.CreateGeometryBuffer(BufferUsage::StaticDraw, (unsigned)Countof(vert), (unsigned)sizeof(testVertex), vert, (unsigned)Countof(indices), IndexType::Uint32, indices, m_shader);
 
 	m_texture = renderSystem.CreateTexture2D("../Data/textures/1mx1m.png");
+	m_textureRed = renderSystem.CreateTexture2D("../Data/textures/1mx1m_red.png");
 
 	GetInput().SetMouseLock(true);
+
+
+	m_plane = GetGraphicsSystem().CreateModel("../Data/model/plane.obj");
+	m_box = GetGraphicsSystem().CreateModel("../Data/model/box.obj");
+	m_sphere = GetGraphicsSystem().CreateModel("../Data/model/sphere.obj");
+	m_capsule = GetGraphicsSystem().CreateModel("../Data/model/capsule.obj");
 
 	return true;
 }
@@ -101,6 +160,8 @@ void GameApp::Destroy()
 	m_geom.reset();
 	m_texture.reset();
 }
+float XXX = 7.0f;
+float ZZZ = -2.0f;
 //-----------------------------------------------------------------------------
 void GameApp::Render()
 {
@@ -114,6 +175,7 @@ void GameApp::Render()
 		renderSystem.SetViewport(m_windowWidth, m_windowHeight);
 	}
 
+	renderSystem.SetClearColor(glm::vec3(0.1f, 0.2f, 0.5f));
 	renderSystem.ClearFrame();
 	renderSystem.Bind(m_texture, 0);
 	renderSystem.Bind(m_shader);
@@ -122,7 +184,6 @@ void GameApp::Render()
 	renderSystem.SetUniform(m_uniformViewMatrix, m_camera.GetViewMatrix());
 	renderSystem.SetUniform(m_uniformWorldMatrix, glm::mat4(1.0f));
 	renderSystem.SetUniform(m_uniformLightDirection, m_camera.GetNormalizedViewVector());
-
 
 	renderSystem.Draw(m_geom->vao);
 }
@@ -134,6 +195,11 @@ void GameApp::Update(float deltaTime)
 		ExitRequest();
 		return;
 	}
+
+	if (GetInput().IsKeyDown(Input::KEY_J)) XXX -= 1.0 * deltaTime;
+	if (GetInput().IsKeyDown(Input::KEY_L)) XXX += 1.0 * deltaTime;
+	if (GetInput().IsKeyDown(Input::KEY_I)) ZZZ += 1.0 * deltaTime;
+	if (GetInput().IsKeyDown(Input::KEY_K)) ZZZ -= 1.0 * deltaTime;
 
 	const float mouseSensitivity = 10.0f * deltaTime;
 	const float moveSpeed = 10.0f * deltaTime;
