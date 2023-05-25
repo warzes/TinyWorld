@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PhysicsSimulator.h"
+
 class GameApp final : public IApp
 {
 	bool Create() final;
@@ -30,4 +32,6 @@ private:
 	glm::mat4 m_perspective;
 	Camera m_camera;
 
+	// physics
+	StaticPhysicsObjectRef m_planePh;
 };

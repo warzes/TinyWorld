@@ -2,6 +2,8 @@
 
 #include "TinyEngine.h"
 
+#include <functional>
+
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>

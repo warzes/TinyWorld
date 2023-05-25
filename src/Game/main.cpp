@@ -11,8 +11,8 @@ int main(
 	[[maybe_unused]] char* argv[])
 {
 	auto engineDevice = EngineDevice::Create({});
-	//engineDevice->RunApp(std::make_shared<GameApp>());
-	engineDevice->RunApp(std::make_shared<GameAppBullet>());
+	engineDevice->RunApp(std::make_shared<GameApp>());
+	//engineDevice->RunApp(std::make_shared<GameAppBullet>());
 
 }
 //-----------------------------------------------------------------------------

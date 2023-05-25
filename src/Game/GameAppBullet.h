@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PhysicsSimulator.h"
+
 class GameAppBullet final : public IApp
 {
 	bool Create() final;

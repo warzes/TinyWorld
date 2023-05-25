@@ -19,6 +19,21 @@
     <ClCompile Include="GameAppBullet.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsSimulator.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticPhysicsObject.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsMaterial.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsJoint.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameApp.h" />
@@ -32,6 +47,21 @@
     <ClInclude Include="GameAppBullet.h">
       <Filter>Bullet</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsSimulator.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticPhysicsObject.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsMaterial.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsJoint.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="_DOC">
@@ -42,6 +72,9 @@
     </Filter>
     <Filter Include="Bullet\Engine">
       <UniqueIdentifier>{4ac260d8-503d-4424-bb41-ffa7f33c37bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bullet\Framework">
+      <UniqueIdentifier>{14dd4867-4111-4a4c-a1c8-46d91367deaa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

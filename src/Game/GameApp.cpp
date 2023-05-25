@@ -55,6 +55,16 @@ constexpr int ss = sizeof(Region)/1024/1024;
 //-----------------------------------------------------------------------------
 bool GameApp::Create()
 {
+	PhysicsCreateInfo createInfo;
+
+	auto& simulator = GetPhysicsSimulator();
+
+	if (!simulator.Create(createInfo))
+		return false;
+
+	m_planePh = simulator.CreateStaticObject(PlaneDesc{});
+
+
 	const char* vertexShaderText = R"(
 #version 330 core
 
@@ -155,13 +165,13 @@ void main()
 //-----------------------------------------------------------------------------
 void GameApp::Destroy()
 {
+	m_planePh.reset();
+	GetPhysicsSimulator().Destroy();
 	GetInput().SetMouseLock(false);
 	m_shader.reset();
 	m_geom.reset();
 	m_texture.reset();
 }
-float XXX = 7.0f;
-float ZZZ = -2.0f;
 //-----------------------------------------------------------------------------
 void GameApp::Render()
 {
@@ -196,10 +206,7 @@ void GameApp::Update(float deltaTime)
 		return;
 	}
 
-	if (GetInput().IsKeyDown(Input::KEY_J)) XXX -= 1.0 * deltaTime;
-	if (GetInput().IsKeyDown(Input::KEY_L)) XXX += 1.0 * deltaTime;
-	if (GetInput().IsKeyDown(Input::KEY_I)) ZZZ += 1.0 * deltaTime;
-	if (GetInput().IsKeyDown(Input::KEY_K)) ZZZ -= 1.0 * deltaTime;
+	GetPhysicsSimulator().Update(deltaTime);
 
 	const float mouseSensitivity = 10.0f * deltaTime;
 	const float moveSpeed = 10.0f * deltaTime;
