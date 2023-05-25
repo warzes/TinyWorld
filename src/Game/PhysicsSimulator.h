@@ -4,6 +4,7 @@
 #include "StaticPhysicsObject.h"
 #include "PhysicsMaterial.h"
 #include "PhysicsJoint.h"
+#include "ShapeDesc.h"
 
 typedef std::function<void(const glm::vec3& point, const glm::vec3& normal, float Velocity)> PhysicsContactCallback;
 
@@ -19,12 +20,6 @@ struct PhysicsCreateInfo
 	AABB aabbInAxisSweep = { glm::vec3(-500.0f), glm::vec3(500.0f) }; // только для AxisSweep3
 
 	glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
-};
-
-struct PlaneDesc
-{
-	glm::vec3 planeNormal = glm::vec3(0.0f, 1.0f, 0.0f);
-	float planeConstant = 0.0f;
 };
 
 class PhysicsSimulator
@@ -46,7 +41,7 @@ public:
 	std::shared_ptr<StaticPhysicsObject> CreateStaticObject(const PlaneDesc& planeDesc);
 	void DeleteStaticObject(std::shared_ptr<StaticPhysicsObject> object);
 
-	std::shared_ptr<RigidBody> CreateRigidBody();
+	std::shared_ptr<RigidBody> CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
     void DeleteRigidBody(std::shared_ptr<RigidBody> object);
 
 	std::shared_ptr < PhysicsJoint> CreateJoint();

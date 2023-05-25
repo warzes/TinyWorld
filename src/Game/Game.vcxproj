@@ -115,12 +115,14 @@
   <ItemGroup>
     <ClInclude Include="..\3rdparty\bullet\btBulletCollisionCommon.h" />
     <ClInclude Include="..\3rdparty\bullet\btBulletDynamicsCommon.h" />
+    <ClInclude Include="BulletUtility.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="GameAppBullet.h" />
     <ClInclude Include="PhysicsJoint.h" />
     <ClInclude Include="PhysicsMaterial.h" />
     <ClInclude Include="PhysicsSimulator.h" />
     <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="ShapeDesc.h" />
     <ClInclude Include="StaticPhysicsObject.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

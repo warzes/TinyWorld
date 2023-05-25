@@ -62,6 +62,12 @@
     <ClInclude Include="PhysicsJoint.h">
       <Filter>Bullet\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="BulletUtility.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeDesc.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="_DOC">

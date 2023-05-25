@@ -64,6 +64,8 @@ bool GameApp::Create()
 
 	m_planePh = simulator.CreateStaticObject(PlaneDesc{});
 
+	m_boxPh = simulator.CreateRigidBody(BoxDesc{}, 1.0f, glm::vec3(0.0f, 60.0f, 0.0f), glm::quat(1.0f, 0, 0, 0));
+
 
 	const char* vertexShaderText = R"(
 #version 330 core
@@ -166,6 +168,7 @@ void main()
 void GameApp::Destroy()
 {
 	m_planePh.reset();
+	m_boxPh.reset();
 	GetPhysicsSimulator().Destroy();
 	GetInput().SetMouseLock(false);
 	m_shader.reset();
@@ -194,8 +197,13 @@ void GameApp::Render()
 	renderSystem.SetUniform(m_uniformViewMatrix, m_camera.GetViewMatrix());
 	renderSystem.SetUniform(m_uniformWorldMatrix, glm::mat4(1.0f));
 	renderSystem.SetUniform(m_uniformLightDirection, m_camera.GetNormalizedViewVector());
-
 	renderSystem.Draw(m_geom->vao);
+
+	renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 1, 100)));
+	GetGraphicsSystem().Draw(m_plane);
+
+	renderSystem.SetUniform(m_uniformWorldMatrix, m_boxPh->GetMatrix());
+	GetGraphicsSystem().Draw(m_box);
 }
 //-----------------------------------------------------------------------------
 void GameApp::Update(float deltaTime)

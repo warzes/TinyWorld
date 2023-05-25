@@ -47,7 +47,7 @@ void PhysicsSimulator::Destroy()
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Update(float deltaTime)
 {
-	m_dynamicsWorld->stepSimulation(1.f / 60.0f, 3/*10*/); // FIX FPS
+	m_dynamicsWorld->stepSimulation(deltaTime, 10); // FIX FPS
 }
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::SetGravity(const glm::vec3& gravity)
@@ -86,9 +86,12 @@ void PhysicsSimulator::DeleteStaticObject(std::shared_ptr<StaticPhysicsObject> o
 	RemoveElement(m_staticBodies, object);
 }
 //-----------------------------------------------------------------------------
-std::shared_ptr<RigidBody> PhysicsSimulator::CreateRigidBody()
+std::shared_ptr<RigidBody> PhysicsSimulator::CreateRigidBody(const BoxDesc& boxDesc, float mass, const glm::vec3& pos, const glm::quat& rotation)
 {
-	return std::shared_ptr<RigidBody>();
+	std::shared_ptr<RigidBody> ref(new RigidBody());
+	ref->CreateBox(boxDesc.boxHalfExtents, mass, pos, rotation);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
 }
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::DeleteRigidBody(std::shared_ptr<RigidBody> object)
