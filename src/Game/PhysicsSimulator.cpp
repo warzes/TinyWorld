@@ -96,6 +96,22 @@ StaticPhysicsObjectRef PhysicsSimulator::CreateStaticObject(const PlaneDesc& pla
 	return ref;
 }
 //-----------------------------------------------------------------------------
+StaticPhysicsObjectRef PhysicsSimulator::CreateStaticObject(const ConvexDesc& convexDesc, const glm::vec3& pos, const glm::quat& rotation)
+{
+	StaticPhysicsObjectRef ref(new StaticPhysicsObject());
+	ref->CreateConvex(convexDesc.points, pos, rotation);
+	m_staticBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+StaticPhysicsObjectRef PhysicsSimulator::CreateStaticObject(const TriangleMeshDesc& meshDesc, const glm::vec3& pos, const glm::quat& rotation)
+{
+	StaticPhysicsObjectRef ref(new StaticPhysicsObject());
+	ref->CreateTriangleMesh(meshDesc.verts, meshDesc.indeces, pos, rotation);
+	m_staticBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
 void PhysicsSimulator::Delete(StaticPhysicsObjectRef object)
 {
 	RemoveElement(m_staticBodies, object);

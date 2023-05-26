@@ -23,11 +23,13 @@ private:
 	GeometryBufferRef m_geom;
 	Texture2DRef m_texture;
 	Texture2DRef m_textureRed;
+	Texture2DRef m_textureTestMap;
 
 	ModelRef m_plane;
 	ModelRef m_box;
 	ModelRef m_sphere;
 	ModelRef m_capsule;
+	ModelRef m_testMap;
 
 	glm::mat4 m_perspective;
 	Camera m_camera;
@@ -36,4 +38,5 @@ private:
 	StaticPhysicsObjectRef m_planePh;
 	std::vector<RigidBodyRef> m_boxPh;
 	CharacterControllerRef m_playerPh;
+	StaticPhysicsObjectRef m_testMapPh;
 };

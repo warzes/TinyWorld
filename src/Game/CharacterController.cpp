@@ -51,9 +51,9 @@ void CharacterController::Walk(const glm::vec3& directions)
 	m_kinematicCharacterController->setWalkDirection({ directions.x, directions.y, directions.z });
 }
 //-----------------------------------------------------------------------------
-void CharacterController::Jump()
+void CharacterController::Jump(const glm::vec3& v)
 {
-	m_kinematicCharacterController->jump();
+	m_kinematicCharacterController->jump({v.x, v.y, v.z});
 }
 //-----------------------------------------------------------------------------
 bool CharacterController::IsGround() const

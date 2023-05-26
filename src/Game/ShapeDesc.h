@@ -38,3 +38,14 @@ struct TriangleMeshDesc
 	std::vector<glm::vec3> verts;
 	std::vector<unsigned> indeces;
 };
+
+enum class PhysicsObjectShapeType
+{
+	Plane,
+	Box,
+	Sphere,
+	Capsule,
+	Cone,
+	Convex,
+	TriangleMesh
+};

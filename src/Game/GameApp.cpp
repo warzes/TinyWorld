@@ -63,28 +63,6 @@ bool GameApp::Create()
 	if (!simulator.Create(createInfo))
 		return false;
 
-	m_planePh = simulator.CreateStaticObject(PlaneDesc{});
-
-	m_boxPh.resize(192);
-	{
-		float rad = 12.0f;
-		int n = 0;
-		for (int j = 0; j < 24; j++)
-		{
-			for (int i = 0; i < 8; i++)
-			{
-				m_boxPh[n] = simulator.CreateRigidBody(BoxDesc{}, 1.0f,
-					glm::vec3(rad * cos(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f), 1.0f + j * 2.0f, -rad * sin(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f)),
-					glm::rotate(glm::quat(1.0f, 0.0f, 0.0f, 0.0f), ((n + static_cast<float>(j % 2) / 2.0f) * 2.0f * 3.14f / 16.0f), glm::vec3(0, 1, 0)));
-				n++;
-			}
-		}
-	}
-
-	m_playerPh = simulator.CreateCharacterController();
-	m_playerPh->Warp({ 0.0f, 10.0f, -10.0f });
-
-
 	const char* vertexShaderText = R"(
 #version 330 core
 
@@ -170,6 +148,7 @@ void main()
 
 	m_texture = renderSystem.CreateTexture2D("../Data/textures/1mx1m.png");
 	m_textureRed = renderSystem.CreateTexture2D("../Data/textures/1mx1m_red.png");
+	m_textureTestMap = renderSystem.CreateTexture2D("../Data/model/tileset.png");
 
 	GetInput().SetMouseLock(true);
 
@@ -178,7 +157,37 @@ void main()
 	m_sphere = GetGraphicsSystem().CreateModel("../Data/model/sphere.obj");
 	m_capsule = GetGraphicsSystem().CreateModel("../Data/model/capsule.obj");
 
-	m_camera.Teleport({ 0.0f, 15.0f, -25.0f });
+	m_testMap = GetGraphicsSystem().CreateModel("../Data/model/testMap.obj");
+
+	//m_camera.Teleport({ 0.0f, 15.0f, -25.0f });
+
+	m_planePh = simulator.CreateStaticObject(PlaneDesc{.planeConstant = -2.0f});
+
+	m_boxPh.resize(96);
+	{
+		float rad = 12.0f;
+		int n = 0;
+		for (int j = 0; j < 12; j++)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				m_boxPh[n] = simulator.CreateRigidBody(BoxDesc{}, 1.0f,
+					glm::vec3(rad * cos(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f), 1.0f + j * 2.0f, -rad * sin(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f)),
+					glm::rotate(glm::quat(1.0f, 0.0f, 0.0f, 0.0f), ((n + static_cast<float>(j % 2) / 2.0f) * 2.0f * 3.14f / 16.0f), glm::vec3(0, 1, 0)));
+				n++;
+			}
+		}
+	}
+
+	m_playerPh = simulator.CreateCharacterController();
+	m_playerPh->Warp({ 0.0f, 10.0f, -10.0f });
+
+
+	TrianglesInfo ti = GetGraphicsSystem().GetTrianglesInModel(m_testMap);
+	TriangleMeshDesc tmd;
+	tmd.verts = ti.vertices;
+	tmd.indeces = ti.indexes;
+	m_testMapPh = simulator.CreateStaticObject(tmd);
 
 	return true;
 }
@@ -189,6 +198,7 @@ void GameApp::Destroy()
 	for (size_t i = 0; i < m_boxPh.size(); i++)
 		m_boxPh[i].reset();
 	m_playerPh.reset();
+	m_testMapPh.reset();
 
 	GetPhysicsSimulator().Destroy();
 	GetInput().SetMouseLock(false);
@@ -220,8 +230,8 @@ void GameApp::Render()
 	renderSystem.SetUniform(m_uniformLightDirection, m_camera.GetNormalizedViewVector());
 	renderSystem.Draw(m_geom->vao);
 
-	renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 0, 100)));
-	GetGraphicsSystem().Draw(m_plane);
+	//renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 0, 100)));
+	//GetGraphicsSystem().Draw(m_plane);
 
 	for (size_t i = 0; i < m_boxPh.size(); i++)
 	{
@@ -233,6 +243,11 @@ void GameApp::Render()
 	renderSystem.Bind(m_textureRed, 0);
 	renderSystem.SetUniform(m_uniformWorldMatrix, m_playerPh->GetMatrix());
 	GetGraphicsSystem().Draw(m_capsule);
+
+	//renderSystem.Bind(m_textureTestMap, 0);
+	renderSystem.SetUniform(m_uniformWorldMatrix, m_testMapPh->GetMatrix());
+	GetGraphicsSystem().Draw(m_testMap);
+
 }
 //-----------------------------------------------------------------------------
 void GameApp::Update(float deltaTime)
@@ -256,20 +271,26 @@ void GameApp::Update(float deltaTime)
 	const glm::vec3 forwardVector = m_camera.GetForwardVector();
 	const glm::vec3 rightVector = m_camera.GetRightVector();
 
+	bool onGround = m_playerPh->IsGround();
+
 	glm::vec3 walkDirection(0, 0, 0);
 	if (input.IsKeyDown(Input::KEY_W)) walkDirection += forwardVector;
 	if (input.IsKeyDown(Input::KEY_S)) walkDirection -= forwardVector;
 	if (input.IsKeyDown(Input::KEY_A)) walkDirection -= rightVector;
 	if (input.IsKeyDown(Input::KEY_D)) walkDirection += rightVector;
-	if (walkDirection != glm::vec3(0.0f)) walkDirection = glm::normalize(walkDirection);
-	walkDirection *= moveSpeed;
+
+	if (walkDirection.x + walkDirection.y + walkDirection.z != 0.0f)
+	{
+		walkDirection = glm::normalize(walkDirection);
+		walkDirection *= moveSpeed;
+		//if (!onGround) walkDirection *= 0.5f; // персонаж в воздухе, скорость снижена. нужно ли?
+	}
 	m_playerPh->Walk(walkDirection);
 
-	bool onGround = m_playerPh->IsGround();
 	if (GetInput().IsKeyDown(Input::KEY_SPACE) && onGround)
 		m_playerPh->Jump();
 
-	m_camera.Teleport(m_playerPh->GetPosition() + glm::vec3(0.0f, 1.7f, 0.0f));
+	m_camera.Teleport(m_playerPh->GetPosition() + glm::vec3(0.0f, 1.5f, 0.0f));
 
 	//if (GetInput().IsKeyDown(Input::KEY_W)) m_camera.MoveBy(moveSpeed);
 	//if (GetInput().IsKeyDown(Input::KEY_S)) m_camera.MoveBy(-moveSpeed);

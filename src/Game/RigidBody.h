@@ -2,15 +2,7 @@
 
 // TODO: отрефакторить объединив с статикобъектом
 
-enum class RigidBodyShapeType
-{
-	Box,
-	Sphere,
-	Capsule,
-	Cone,
-	Convex,
-	TriangleMesh
-};
+#include "ShapeDesc.h"
 
 class RigidBody
 {
@@ -26,7 +18,7 @@ public:
 
 	void Destroy();
 
-	RigidBodyShapeType GetShapeType() const { return m_shapeType; }
+	PhysicsObjectShapeType GetShapeType() const { return m_shapeType; }
 
 	void SetGravity(const glm::vec3& gravity);
 	void SetMass(float mass);
@@ -56,7 +48,7 @@ private:
 	btRigidBody* m_body = nullptr;
 	glm::vec3 m_localInertia = glm::vec3(0.0f);
 	float m_mass = 1.0f;
-	RigidBodyShapeType m_shapeType;
+	PhysicsObjectShapeType m_shapeType;
 };
 
 using RigidBodyRef = std::shared_ptr<RigidBody>;

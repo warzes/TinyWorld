@@ -45,6 +45,8 @@ public:
 	void Delete(PhysicsMaterialRef material);
 
 	StaticPhysicsObjectRef CreateStaticObject(const PlaneDesc& planeDesc);
+	StaticPhysicsObjectRef CreateStaticObject(const ConvexDesc& convexDesc, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	StaticPhysicsObjectRef CreateStaticObject(const TriangleMeshDesc& meshDesc, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
 	void Delete(StaticPhysicsObjectRef object);
 
 	RigidBodyRef CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));

@@ -10,42 +10,42 @@ RigidBody::~RigidBody()
 //-----------------------------------------------------------------------------
 void RigidBody::CreateBox(const glm::vec3& boxHalfExtents, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
-	m_shapeType = RigidBodyShapeType::Box;
+	m_shapeType = PhysicsObjectShapeType::Box;
 	m_shape = new btBoxShape({ boxHalfExtents.x, boxHalfExtents.y, boxHalfExtents.z });
 	create(mass, position, rotation);
 }
 //-----------------------------------------------------------------------------
 void RigidBody::CreateSphere(float radius, float mass, const glm::vec3& position)
 {
-	m_shapeType = RigidBodyShapeType::Sphere;
+	m_shapeType = PhysicsObjectShapeType::Sphere;
 	m_shape = new btSphereShape(radius);
 	create(mass, position, glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
 }
 //-----------------------------------------------------------------------------
 void RigidBody::CreateCapsule(float radius, float height, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
-	m_shapeType = RigidBodyShapeType::Capsule;
+	m_shapeType = PhysicsObjectShapeType::Capsule;
 	m_shape = new btCapsuleShape(radius, height);
 	create(mass, position, rotation);
 }
 //-----------------------------------------------------------------------------
 void RigidBody::CreateCone(float radius, float height, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
-	m_shapeType = RigidBodyShapeType::Cone;
+	m_shapeType = PhysicsObjectShapeType::Cone;
 	m_shape = new btConeShape(radius, height);
 	create(mass, position, rotation);
 }
 //-----------------------------------------------------------------------------
 void RigidBody::CreateConvex(const std::vector<glm::vec3>& points, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
-	m_shapeType = RigidBodyShapeType::Convex;
+	m_shapeType = PhysicsObjectShapeType::Convex;
 	m_shape = new btConvexHullShape((btScalar*)points.data(), points.size(), sizeof(glm::vec3));
 	create(mass, position, rotation);
 }
 //-----------------------------------------------------------------------------
 void RigidBody::CreateTriangleMesh(const std::vector<glm::vec3>& vert, const std::vector<unsigned>& index, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
-	m_shapeType = RigidBodyShapeType::TriangleMesh;
+	m_shapeType = PhysicsObjectShapeType::TriangleMesh;
 	const size_t triCount = index.size() / 3;
 
 	btTriangleMesh* meshInterface = new btTriangleMesh(true, false);
@@ -84,7 +84,7 @@ void RigidBody::Destroy()
 
 	if (m_shape)
 	{
-		if (m_shapeType == RigidBodyShapeType::TriangleMesh)
+		if (m_shapeType == PhysicsObjectShapeType::TriangleMesh)
 		{
 			auto triangleMeshShape = dynamic_cast<btBvhTriangleMeshShape*>(m_shape);
 			if (triangleMeshShape)

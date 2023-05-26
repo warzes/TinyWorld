@@ -2,7 +2,7 @@
 
 const float STEP_HEIGHT = 0.4f;
 const float JUMP_HEIGHT = 2.0f;
-const float FALL_SPEED = 55.0f;
+const float FALL_SPEED = 80.0f;
 const float JUMP_SPEED = 14.0f;
 const float MAX_SLOPE = 45.0f;
 const float DEFAULT_DAMPING = 0.2f;
@@ -17,7 +17,7 @@ public:
 	void Warp(const glm::vec3& positions);
 
 	void Walk(const glm::vec3& directions);
-	void Jump();
+	void Jump(const glm::vec3& v = glm::vec3(0.0f));
 
 	bool IsGround() const;
 
