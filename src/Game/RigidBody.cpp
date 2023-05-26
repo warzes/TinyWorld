@@ -29,6 +29,13 @@ void RigidBody::CreateCapsule(float radius, float height, float mass, const glm:
 	create(mass, position, rotation);
 }
 //-----------------------------------------------------------------------------
+void RigidBody::CreateCone(float radius, float height, float mass, const glm::vec3& position, const glm::quat& rotation)
+{
+	m_shapeType = RigidBodyShapeType::Cone;
+	m_shape = new btConeShape(radius, height);
+	create(mass, position, rotation);
+}
+//-----------------------------------------------------------------------------
 void RigidBody::CreateConvex(const std::vector<glm::vec3>& points, float mass, const glm::vec3& position, const glm::quat& rotation)
 {
 	m_shapeType = RigidBodyShapeType::Convex;

@@ -34,5 +34,5 @@ private:
 
 	// physics
 	StaticPhysicsObjectRef m_planePh;
-	RigidBodyRef m_boxPh;
+	std::vector<RigidBodyRef> m_boxPh;
 };

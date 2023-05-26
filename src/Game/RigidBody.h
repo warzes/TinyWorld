@@ -7,6 +7,7 @@ enum class RigidBodyShapeType
 	Box,
 	Sphere,
 	Capsule,
+	Cone,
 	Convex,
 	TriangleMesh
 };
@@ -19,6 +20,7 @@ public:
 	void CreateBox(const glm::vec3& boxHalfExtents, float mass, const glm::vec3& position, const glm::quat& rotation);
 	void CreateSphere(float radius, float mass, const glm::vec3& position);
 	void CreateCapsule(float radius, float height, float mass, const glm::vec3& position, const glm::quat& rotation);
+	void CreateCone(float radius, float height, float mass, const glm::vec3& position, const glm::quat& rotation);
 	void CreateConvex(const std::vector<glm::vec3>& points, float mass, const glm::vec3& position, const glm::quat& rotation);
 	void CreateTriangleMesh(const std::vector<glm::vec3>& vert, const std::vector<unsigned>& index, float mass, const glm::vec3& position, const glm::quat& rotation);
 

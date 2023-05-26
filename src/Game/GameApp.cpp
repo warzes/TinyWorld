@@ -64,8 +64,21 @@ bool GameApp::Create()
 
 	m_planePh = simulator.CreateStaticObject(PlaneDesc{});
 
-	m_boxPh = simulator.CreateRigidBody(BoxDesc{}, 1.0f, glm::vec3(0.0f, 60.0f, 0.0f), glm::quat(1.0f, 0, 0, 0));
-
+	m_boxPh.resize(384);
+	{
+		float rad = 12.0f;
+		int n = 0;
+		for (int j = 0; j < 24; j++)
+		{
+			for (int i = 0; i < 16; i++)
+			{
+				m_boxPh[n] = simulator.CreateRigidBody(BoxDesc{}, 1.0f,
+					glm::vec3(rad * cos(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f), 1.0f + j * 2.0f, -rad * sin(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f)),
+					glm::rotate(glm::quat(1.0f, 0.0f, 0.0f, 0.0f), ((n + static_cast<float>(j % 2) / 2.0f) * 2.0f * 3.14f / 16.0f), glm::vec3(0, 1, 0)));
+				n++;
+			}
+		}
+	}
 
 	const char* vertexShaderText = R"(
 #version 330 core
@@ -138,7 +151,6 @@ void main()
 		2, 1, 0    // second triangle
 	};
 
-
 	//glEnable(GL_CULL_FACE); // для теста - треугольник выше против часой стрелки
 
 	auto& renderSystem = GetRenderSystem();
@@ -156,11 +168,12 @@ void main()
 
 	GetInput().SetMouseLock(true);
 
-
 	m_plane = GetGraphicsSystem().CreateModel("../Data/model/plane.obj");
 	m_box = GetGraphicsSystem().CreateModel("../Data/model/box.obj");
 	m_sphere = GetGraphicsSystem().CreateModel("../Data/model/sphere.obj");
 	m_capsule = GetGraphicsSystem().CreateModel("../Data/model/capsule.obj");
+
+	m_camera.Teleport({ 0.0f, 15.0f, -25.0f });
 
 	return true;
 }
@@ -168,7 +181,9 @@ void main()
 void GameApp::Destroy()
 {
 	m_planePh.reset();
-	m_boxPh.reset();
+	for (size_t i = 0; i < m_boxPh.size(); i++)
+		m_boxPh[i].reset();
+
 	GetPhysicsSimulator().Destroy();
 	GetInput().SetMouseLock(false);
 	m_shader.reset();
@@ -202,8 +217,11 @@ void GameApp::Render()
 	renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 1, 100)));
 	GetGraphicsSystem().Draw(m_plane);
 
-	renderSystem.SetUniform(m_uniformWorldMatrix, m_boxPh->GetMatrix());
-	GetGraphicsSystem().Draw(m_box);
+	for (size_t i = 0; i < m_boxPh.size(); i++)
+	{
+		renderSystem.SetUniform(m_uniformWorldMatrix, m_boxPh[i]->GetMatrix());
+		GetGraphicsSystem().Draw(m_box);
+	}
 }
 //-----------------------------------------------------------------------------
 void GameApp::Update(float deltaTime)
