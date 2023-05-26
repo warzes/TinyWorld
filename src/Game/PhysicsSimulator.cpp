@@ -1,6 +1,9 @@
 ﻿#include "stdafx.h"
 #include "PhysicsSimulator.h"
 //-----------------------------------------------------------------------------
+const float PhysicsStepTime = 1.0f / 60.f; //default 60fps
+const unsigned PhysicsMaxSubSteps = 4;
+//-----------------------------------------------------------------------------
 PhysicsSimulator gPhysicsSimulator;
 //-----------------------------------------------------------------------------
 PhysicsSimulator::~PhysicsSimulator()
@@ -19,8 +22,10 @@ bool PhysicsSimulator::Create(const PhysicsCreateInfo& createInfo)
 		m_broadPhase = new btDbvtBroadphase();
 	else
 		m_broadPhase = new bt32BitAxisSweep3(
-			{ createInfo.aabbInAxisSweep.min.x, createInfo.aabbInAxisSweep.min.y, createInfo.aabbInAxisSweep.min.z },
-			{ createInfo.aabbInAxisSweep.max.x, createInfo.aabbInAxisSweep.max.y, createInfo.aabbInAxisSweep.max.z });
+			{ createInfo.worldSize.min.x, createInfo.worldSize.min.y, createInfo.worldSize.min.z },
+			{ createInfo.worldSize.max.x, createInfo.worldSize.max.y, createInfo.worldSize.max.z });
+
+	m_broadPhase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
 
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -29,7 +34,16 @@ bool PhysicsSimulator::Create(const PhysicsCreateInfo& createInfo)
 	m_solver = new btSequentialImpulseConstraintSolver;
 
 	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher, m_broadPhase, m_solver, m_collisionConfiguration);
+	if (!m_dynamicsWorld)
+	{
+		LogError("BtWorld failed to create dynamics world!");
+		return false;
+	}
+
 	m_dynamicsWorld->setGravity(btVector3(m_gravity.x, m_gravity.y, m_gravity.z));
+
+	// Removing the randomization in the solver is required to make the simulation deterministic.
+	m_dynamicsWorld->getSolverInfo().m_solverMode &= ~SOLVER_RANDMIZE_ORDER;
 
 	return true;
 }
@@ -47,7 +61,12 @@ void PhysicsSimulator::Destroy()
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Update(float deltaTime)
 {
-	m_dynamicsWorld->stepSimulation(deltaTime, 10); // FIX FPS
+	//const float elapsedSec = deltaTime * 0.001f;
+
+	puts(std::to_string(deltaTime).c_str());
+
+	m_dynamicsWorld->stepSimulation(deltaTime, PhysicsMaxSubSteps, PhysicsStepTime);
+	//m_dynamicsWorld->stepSimulation(deltaTime, 10); // FIX FPS
 }
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::SetGravity(const glm::vec3& gravity)
@@ -107,6 +126,28 @@ std::shared_ptr<PhysicsJoint> PhysicsSimulator::CreateJoint()
 void PhysicsSimulator::DeleteJoint(std::shared_ptr<PhysicsJoint> object)
 {
 	RemoveElement(m_joints, object);
+}
+//-----------------------------------------------------------------------------
+bool PhysicsSimulator::CastRay(const glm::vec3& startPnt, const glm::vec3& endPnt, PhysicsRayInfo* ri, const glm::vec3& impulse)
+{
+	btCollisionWorld::ClosestRayResultCallback result({ startPnt.x, startPnt.y, startPnt.z }, { endPnt.x, endPnt.y, endPnt.z });
+	m_dynamicsWorld->rayTest({ startPnt.x, startPnt.y, startPnt.z }, { endPnt.x, endPnt.y, endPnt.z }, result);
+	if (!result.hasHit() || !result.m_collisionObject)
+		return false;
+
+	//if (ri)
+	//{
+	//	ri->object = PhysicsUserData::getObject(result.m_collisionObject->getUserPointer());
+	//	if (ri->object == NULL)
+	//		return false;
+
+	//	ri->distance = (endPnt - startPnt).len() * result.m_closestHitFraction;
+	//	ri->normal = btCast<Point3F>(result.m_hitNormalWorld);
+	//	ri->point = btCast<Point3F>(result.m_hitPointWorld);
+	//	ri->t = result.m_closestHitFraction;
+	//}
+
+	return true;
 }
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::ClearScene(bool rigidBodies, bool staticObjects, bool joints)

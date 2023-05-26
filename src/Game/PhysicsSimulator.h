@@ -17,9 +17,14 @@ enum class BroadPhaseType
 struct PhysicsCreateInfo
 {
 	BroadPhaseType broadPhaseType = BroadPhaseType::Dbvt;
-	AABB aabbInAxisSweep = { glm::vec3(-500.0f), glm::vec3(500.0f) }; // только для AxisSweep3
+	AABB worldSize = { glm::vec3(-1000.0f), glm::vec3(1000.0f) }; // только для AxisSweep3
 
 	glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+};
+
+struct PhysicsRayInfo
+{
+
 };
 
 class PhysicsSimulator
@@ -42,12 +47,14 @@ public:
 	void DeleteStaticObject(std::shared_ptr<StaticPhysicsObject> object);
 
 	std::shared_ptr<RigidBody> CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
-    void DeleteRigidBody(std::shared_ptr<RigidBody> object);
+	void DeleteRigidBody(std::shared_ptr<RigidBody> object);
 
 	std::shared_ptr < PhysicsJoint> CreateJoint();
-    void DeleteJoint(std::shared_ptr < PhysicsJoint> object);
+	void DeleteJoint(std::shared_ptr < PhysicsJoint> object);
 
-    void ClearScene(bool rigidBodies = true, bool staticObjects = true, bool joints = true);
+	bool CastRay(const glm::vec3& startPnt, const glm::vec3& endPnt, PhysicsRayInfo* ri, const glm::vec3& impulse);
+
+	void ClearScene(bool rigidBodies = true, bool staticObjects = true, bool joints = true);
 
 	glm::vec3 GetGravity() const { return m_gravity; }
 	std::list<std::shared_ptr<RigidBody>> GetRigidBodyList() const { return m_rigidBodies; }

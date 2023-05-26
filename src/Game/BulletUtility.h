@@ -1,5 +1,31 @@
 #pragma once
 
+template <class T, class F> inline T btCast(const F& from);
+
+template<>
+inline glm::vec3 btCast(const btVector3& vec)
+{
+	return { vec.x(), vec.y(), vec.z() };
+}
+
+template<>
+inline btVector3 btCast(const glm::vec3& point)
+{
+	return { point.x, point.y, point.z };
+}
+
+template<>
+inline glm::quat btCast(const btQuaternion& quat)
+{
+	return { quat.w(), quat.x(), quat.y(), quat.z() };
+}
+
+template<>
+inline btQuaternion btCast(const glm::quat& quat)
+{
+	return btQuaternion(quat.x, quat.y, quat.z, quat.w);
+}
+
 inline glm::mat4 btScalarTomat4(btScalar* matrix) 
 {
 	return glm::mat4(

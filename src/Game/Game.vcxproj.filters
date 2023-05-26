@@ -87,5 +87,8 @@
     <None Include="ref.md">
       <Filter>_DOC</Filter>
     </None>
+    <None Include="Bullet.md">
+      <Filter>Bullet</Filter>
+    </None>
   </ItemGroup>
 </Project>

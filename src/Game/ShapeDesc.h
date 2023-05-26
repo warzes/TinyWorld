@@ -10,3 +10,18 @@ struct BoxDesc
 {
 	const glm::vec3& boxHalfExtents = glm::vec3(0.5f, 0.5f, 0.5f);
 };
+
+struct SphereDesc
+{
+	float radius = 1.0f;
+};
+
+struct CapsuleDesc
+{
+
+};
+
+struct TriangleMeshDesc
+{
+
+};
