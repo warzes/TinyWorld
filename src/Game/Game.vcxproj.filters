@@ -13,9 +13,6 @@
     <ClCompile Include="..\3rdparty\bullet\btBulletDynamicsAll.cpp">
       <Filter>Bullet\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdparty\bullet\btLinearMathAll2.cpp">
-      <Filter>Bullet\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="GameAppBullet.cpp">
       <Filter>Bullet</Filter>
     </ClCompile>

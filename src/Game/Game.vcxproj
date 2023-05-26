@@ -98,7 +98,6 @@
     <ClCompile Include="..\3rdparty\bullet\btBulletCollisionAll.cpp" />
     <ClCompile Include="..\3rdparty\bullet\btBulletDynamicsAll.cpp" />
     <ClCompile Include="..\3rdparty\bullet\btLinearMathAll.cpp" />
-    <ClCompile Include="..\3rdparty\bullet\btLinearMathAll2.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="GameAppBullet.cpp" />

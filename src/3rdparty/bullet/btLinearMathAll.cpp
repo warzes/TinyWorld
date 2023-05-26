@@ -21,6 +21,8 @@
 //#include "LinearMath/TaskScheduler/btTaskScheduler.cpp"
 //#include "LinearMath/TaskScheduler/btThreadSupportPosix.cpp"
 //#include "LinearMath/TaskScheduler/btThreadSupportWin32.cpp"
+//#include "LinearMath/btPolarDecomposition.cpp"
+//#include "LinearMath/btReducedVector.cpp"
 
 #if defined(_MSC_VER)
 #	pragma warning(pop)
