@@ -101,10 +101,50 @@ void PhysicsSimulator::Delete(StaticPhysicsObjectRef object)
 	RemoveElement(m_staticBodies, object);
 }
 //-----------------------------------------------------------------------------
-RigidBodyRef PhysicsSimulator::CreateRigidBody(const BoxDesc& boxDesc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const BoxDesc& desc, float mass, const glm::vec3& pos, const glm::quat& rotation)
 {
 	RigidBodyRef ref(new RigidBody());
-	ref->CreateBox(boxDesc.boxHalfExtents, mass, pos, rotation);
+	ref->CreateBox(desc.boxHalfExtents, mass, pos, rotation);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const SphereDesc& desc, float mass, const glm::vec3& pos)
+{
+	RigidBodyRef ref(new RigidBody());
+	ref->CreateSphere(desc.radius, mass, pos);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const CapsuleDesc& desc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+{
+	RigidBodyRef ref(new RigidBody());
+	ref->CreateCapsule(desc.radius, desc.height, mass, pos, rotation);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const ConeDesc& desc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+{
+	RigidBodyRef ref(new RigidBody());
+	ref->CreateCone(desc.radius, desc.height, mass, pos, rotation);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const ConvexDesc& desc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+{
+	RigidBodyRef ref(new RigidBody());
+	ref->CreateConvex(desc.points, mass, pos, rotation);
+	m_rigidBodies.emplace_back(ref);
+	return ref;
+}
+//-----------------------------------------------------------------------------
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const TriangleMeshDesc& desc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+{
+	RigidBodyRef ref(new RigidBody());
+	ref->CreateTriangleMesh(desc.verts, desc.indeces, mass, pos, rotation);
 	m_rigidBodies.emplace_back(ref);
 	return ref;
 }
@@ -131,6 +171,7 @@ CharacterControllerRef PhysicsSimulator::CreateCharacterController()
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Delete(CharacterControllerRef character)
 {
+	RemoveElement(m_characters, character);
 }
 //-----------------------------------------------------------------------------
 bool PhysicsSimulator::CastRay(const glm::vec3& startPnt, const glm::vec3& endPnt, PhysicsRayInfo* ri, const glm::vec3& impulse)

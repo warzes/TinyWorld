@@ -18,10 +18,23 @@ struct SphereDesc
 
 struct CapsuleDesc
 {
+	float radius = 0.5f;
+	float height = 1.5f;
+};
 
+struct ConeDesc
+{
+	float radius = 0.5f;
+	float height = 1.5f;
+};
+
+struct ConvexDesc
+{
+	std::vector<glm::vec3> points;
 };
 
 struct TriangleMeshDesc
 {
-
+	std::vector<glm::vec3> verts;
+	std::vector<unsigned> indeces;
 };

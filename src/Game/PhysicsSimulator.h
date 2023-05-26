@@ -48,6 +48,11 @@ public:
 	void Delete(StaticPhysicsObjectRef object);
 
 	RigidBodyRef CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	RigidBodyRef CreateRigidBody(const SphereDesc& sphereDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f));
+	RigidBodyRef CreateRigidBody(const CapsuleDesc& capsuleDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	RigidBodyRef CreateRigidBody(const ConeDesc& coneDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	RigidBodyRef CreateRigidBody(const ConvexDesc& convexDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	RigidBodyRef CreateRigidBody(const TriangleMeshDesc& meshDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
 	void Delete(RigidBodyRef object);
 
 	PhysicsJointRef CreateJoint();
