@@ -4,6 +4,7 @@
 #include "StaticPhysicsObject.h"
 #include "PhysicsMaterial.h"
 #include "PhysicsJoint.h"
+#include "CharacterController.h"
 #include "ShapeDesc.h"
 
 typedef std::function<void(const glm::vec3& point, const glm::vec3& normal, float Velocity)> PhysicsContactCallback;
@@ -40,27 +41,30 @@ public:
 	void SetGravity(const glm::vec3& gravity);
 	void SetContactCallback(const PhysicsContactCallback& callback);
 
-	std::shared_ptr<PhysicsMaterial> CreateMaterial(float StaticFriction = 0.5f, float DynamicFriction = 0.5f, float Restitution = 0.3f);
-	void DeleteMaterial(std::shared_ptr<PhysicsMaterial> material);
+	PhysicsMaterialRef CreateMaterial(float StaticFriction = 0.5f, float DynamicFriction = 0.5f, float Restitution = 0.3f);
+	void Delete(PhysicsMaterialRef material);
 
-	std::shared_ptr<StaticPhysicsObject> CreateStaticObject(const PlaneDesc& planeDesc);
-	void DeleteStaticObject(std::shared_ptr<StaticPhysicsObject> object);
+	StaticPhysicsObjectRef CreateStaticObject(const PlaneDesc& planeDesc);
+	void Delete(StaticPhysicsObjectRef object);
 
-	std::shared_ptr<RigidBody> CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
-	void DeleteRigidBody(std::shared_ptr<RigidBody> object);
+	RigidBodyRef CreateRigidBody(const BoxDesc& boxDesc, float mass = 1.0f, const glm::vec3& pos = glm::vec3(0.0f), const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
+	void Delete(RigidBodyRef object);
 
-	std::shared_ptr < PhysicsJoint> CreateJoint();
-	void DeleteJoint(std::shared_ptr < PhysicsJoint> object);
+	PhysicsJointRef CreateJoint();
+	void Delete(PhysicsJointRef object);
+
+	CharacterControllerRef CreateCharacterController();
+	void Delete(CharacterControllerRef character);
 
 	bool CastRay(const glm::vec3& startPnt, const glm::vec3& endPnt, PhysicsRayInfo* ri, const glm::vec3& impulse);
 
-	void ClearScene(bool rigidBodies = true, bool staticObjects = true, bool joints = true);
+	void ClearScene(bool rigidBodies = true, bool staticObjects = true, bool joints = true, bool character = true);
 
 	glm::vec3 GetGravity() const { return m_gravity; }
-	std::list<std::shared_ptr<RigidBody>> GetRigidBodyList() const { return m_rigidBodies; }
-	std::list<std::shared_ptr<StaticPhysicsObject>> GetStaticBodyList() const { return m_staticBodies; }
-	std::list<std::shared_ptr<PhysicsMaterial>> GetMaterialList() const { return m_materials; }
-	std::list<std::shared_ptr<PhysicsJoint>> GetJointList() const { return m_joints; }
+	std::list<RigidBodyRef> GetRigidBodyList() const { return m_rigidBodies; }
+	std::list<StaticPhysicsObjectRef> GetStaticBodyList() const { return m_staticBodies; }
+	std::list<PhysicsMaterialRef> GetMaterialList() const { return m_materials; }
+	std::list<PhysicsJointRef> GetJointList() const { return m_joints; }
 
 	btDiscreteDynamicsWorld* GetWorld() { return m_dynamicsWorld; }
 private:
@@ -73,11 +77,11 @@ private:
 	btSequentialImpulseConstraintSolver* m_solver = nullptr;
 	btDiscreteDynamicsWorld* m_dynamicsWorld = nullptr;
 
-	std::list<std::shared_ptr<RigidBody>> m_rigidBodies;
-	std::list<std::shared_ptr<StaticPhysicsObject>> m_staticBodies;
-	std::list<std::shared_ptr<PhysicsMaterial>> m_materials;
-	std::list<std::shared_ptr<PhysicsJoint>> m_joints;
-
+	std::list<RigidBodyRef> m_rigidBodies;
+	std::list<StaticPhysicsObjectRef> m_staticBodies;
+	std::list<PhysicsMaterialRef> m_materials;
+	std::list<PhysicsJointRef> m_joints;
+	std::list<CharacterControllerRef> m_characters;
 };
 
 PhysicsSimulator& GetPhysicsSimulator();

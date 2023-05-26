@@ -34,6 +34,9 @@
     <ClCompile Include="PhysicsJoint.cpp">
       <Filter>Bullet\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Bullet\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameApp.h" />
@@ -66,6 +69,9 @@
       <Filter>Bullet\Framework</Filter>
     </ClInclude>
     <ClInclude Include="ShapeDesc.h">
+      <Filter>Bullet\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
       <Filter>Bullet\Framework</Filter>
     </ClInclude>
   </ItemGroup>

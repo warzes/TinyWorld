@@ -40,7 +40,7 @@ bool PhysicsSimulator::Create(const PhysicsCreateInfo& createInfo)
 		return false;
 	}
 
-	m_dynamicsWorld->setGravity(btVector3(m_gravity.x, m_gravity.y, m_gravity.z));
+	m_dynamicsWorld->setGravity({ m_gravity.x, m_gravity.y, m_gravity.z });
 
 	// Removing the randomization in the solver is required to make the simulation deterministic.
 	m_dynamicsWorld->getSolverInfo().m_solverMode &= ~SOLVER_RANDMIZE_ORDER;
@@ -50,7 +50,7 @@ bool PhysicsSimulator::Create(const PhysicsCreateInfo& createInfo)
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Destroy()
 {
-	ClearScene(true, true, true);
+	ClearScene(true, true, true, true);
 	m_materials.clear();
 	delete m_dynamicsWorld; m_dynamicsWorld = nullptr;
 	delete m_solver; m_solver = nullptr;
@@ -61,10 +61,6 @@ void PhysicsSimulator::Destroy()
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Update(float deltaTime)
 {
-	//const float elapsedSec = deltaTime * 0.001f;
-
-	puts(std::to_string(deltaTime).c_str());
-
 	m_dynamicsWorld->stepSimulation(deltaTime, PhysicsMaxSubSteps, PhysicsStepTime);
 	//m_dynamicsWorld->stepSimulation(deltaTime, 10); // FIX FPS
 }
@@ -82,50 +78,59 @@ void PhysicsSimulator::SetContactCallback(const PhysicsContactCallback& callback
 	m_contactCallback = callback;
 }
 //-----------------------------------------------------------------------------
-std::shared_ptr<PhysicsMaterial> PhysicsSimulator::CreateMaterial(float StaticFriction, float DynamicFriction, float Restitution)
+PhysicsMaterialRef PhysicsSimulator::CreateMaterial(float StaticFriction, float DynamicFriction, float Restitution)
 {
 	return nullptr; // TODO:
 }
 //-----------------------------------------------------------------------------
-void PhysicsSimulator::DeleteMaterial(std::shared_ptr<PhysicsMaterial> material)
+void PhysicsSimulator::Delete(PhysicsMaterialRef material)
 {
 	RemoveElement(m_materials, material);
 }
 //-----------------------------------------------------------------------------
-std::shared_ptr<StaticPhysicsObject> PhysicsSimulator::CreateStaticObject(const PlaneDesc& planeDesc)
+StaticPhysicsObjectRef PhysicsSimulator::CreateStaticObject(const PlaneDesc& planeDesc)
 {
-	std::shared_ptr<StaticPhysicsObject> ref(new StaticPhysicsObject());
+	StaticPhysicsObjectRef ref(new StaticPhysicsObject());
 	ref->CreatePlane(planeDesc.planeNormal, planeDesc.planeConstant);
 	m_staticBodies.emplace_back(ref);
 	return ref;
 }
 //-----------------------------------------------------------------------------
-void PhysicsSimulator::DeleteStaticObject(std::shared_ptr<StaticPhysicsObject> object)
+void PhysicsSimulator::Delete(StaticPhysicsObjectRef object)
 {
 	RemoveElement(m_staticBodies, object);
 }
 //-----------------------------------------------------------------------------
-std::shared_ptr<RigidBody> PhysicsSimulator::CreateRigidBody(const BoxDesc& boxDesc, float mass, const glm::vec3& pos, const glm::quat& rotation)
+RigidBodyRef PhysicsSimulator::CreateRigidBody(const BoxDesc& boxDesc, float mass, const glm::vec3& pos, const glm::quat& rotation)
 {
-	std::shared_ptr<RigidBody> ref(new RigidBody());
+	RigidBodyRef ref(new RigidBody());
 	ref->CreateBox(boxDesc.boxHalfExtents, mass, pos, rotation);
 	m_rigidBodies.emplace_back(ref);
 	return ref;
 }
 //-----------------------------------------------------------------------------
-void PhysicsSimulator::DeleteRigidBody(std::shared_ptr<RigidBody> object)
+void PhysicsSimulator::Delete(RigidBodyRef object)
 {
 	RemoveElement(m_rigidBodies, object);
 }
 //-----------------------------------------------------------------------------
-std::shared_ptr<PhysicsJoint> PhysicsSimulator::CreateJoint()
+PhysicsJointRef PhysicsSimulator::CreateJoint()
 {
 	return std::shared_ptr<PhysicsJoint>();
 }
 //-----------------------------------------------------------------------------
-void PhysicsSimulator::DeleteJoint(std::shared_ptr<PhysicsJoint> object)
+void PhysicsSimulator::Delete(PhysicsJointRef object)
 {
 	RemoveElement(m_joints, object);
+}
+//-----------------------------------------------------------------------------
+CharacterControllerRef PhysicsSimulator::CreateCharacterController()
+{
+	return CharacterControllerRef();
+}
+//-----------------------------------------------------------------------------
+void PhysicsSimulator::Delete(CharacterControllerRef character)
+{
 }
 //-----------------------------------------------------------------------------
 bool PhysicsSimulator::CastRay(const glm::vec3& startPnt, const glm::vec3& endPnt, PhysicsRayInfo* ri, const glm::vec3& impulse)
@@ -150,11 +155,12 @@ bool PhysicsSimulator::CastRay(const glm::vec3& startPnt, const glm::vec3& endPn
 	return true;
 }
 //-----------------------------------------------------------------------------
-void PhysicsSimulator::ClearScene(bool rigidBodies, bool staticObjects, bool joints)
+void PhysicsSimulator::ClearScene(bool rigidBodies, bool staticObjects, bool joints, bool characters)
 {
 	if (rigidBodies) m_rigidBodies.clear();
 	if (staticObjects) m_staticBodies.clear();
-	if (joints) m_joints.clear();;
+	if (joints) m_joints.clear();
+	if (characters) m_characters.clear();
 }
 //-----------------------------------------------------------------------------
 PhysicsSimulator& GetPhysicsSimulator()
