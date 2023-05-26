@@ -27,7 +27,6 @@ bool PhysicsSimulator::Create(const PhysicsCreateInfo& createInfo)
 
 	m_broadPhase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
-
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
 
@@ -52,6 +51,7 @@ void PhysicsSimulator::Destroy()
 {
 	ClearScene(true, true, true, true);
 	m_materials.clear();
+	// TODO: не удален btGhostPairCallback - нужно удалить
 	delete m_dynamicsWorld; m_dynamicsWorld = nullptr;
 	delete m_solver; m_solver = nullptr;
 	delete m_dispatcher; m_dispatcher = nullptr;
@@ -166,7 +166,9 @@ void PhysicsSimulator::Delete(PhysicsJointRef object)
 //-----------------------------------------------------------------------------
 CharacterControllerRef PhysicsSimulator::CreateCharacterController()
 {
-	return CharacterControllerRef();
+	CharacterControllerRef ref(new CharacterController());
+	m_characters.emplace_back(ref);
+	return ref;
 }
 //-----------------------------------------------------------------------------
 void PhysicsSimulator::Delete(CharacterControllerRef character)

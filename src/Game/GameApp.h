@@ -35,4 +35,5 @@ private:
 	// physics
 	StaticPhysicsObjectRef m_planePh;
 	std::vector<RigidBodyRef> m_boxPh;
+	CharacterControllerRef m_playerPh;
 };

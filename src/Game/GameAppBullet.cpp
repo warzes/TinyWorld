@@ -210,8 +210,6 @@ bool GameAppBullet::Create()
 
 		// ƒобавл€ем контроллер в физический мир
 		dynamicsWorld->addAction(kinematicCharacterController);
-
-
 #endif
 	}
 
@@ -361,7 +359,6 @@ void GameAppBullet::Destroy()
 
 	// next line is optional: it will be cleared by the destructor when the array goes out of scope
 	collisionShapes.clear();
-
 
 
 	GetInput().SetMouseLock(false);

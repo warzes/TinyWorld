@@ -56,6 +56,7 @@ constexpr int ss = sizeof(Region)/1024/1024;
 bool GameApp::Create()
 {
 	PhysicsCreateInfo createInfo;
+	createInfo.broadPhaseType = BroadPhaseType::AxisSweep3;
 
 	auto& simulator = GetPhysicsSimulator();
 
@@ -64,13 +65,13 @@ bool GameApp::Create()
 
 	m_planePh = simulator.CreateStaticObject(PlaneDesc{});
 
-	m_boxPh.resize(384);
+	m_boxPh.resize(192);
 	{
 		float rad = 12.0f;
 		int n = 0;
 		for (int j = 0; j < 24; j++)
 		{
-			for (int i = 0; i < 16; i++)
+			for (int i = 0; i < 8; i++)
 			{
 				m_boxPh[n] = simulator.CreateRigidBody(BoxDesc{}, 1.0f,
 					glm::vec3(rad * cos(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f), 1.0f + j * 2.0f, -rad * sin(2.0f * 3.14f * (i + static_cast<float>(j % 2) / 2.0f) / 16.0f)),
@@ -79,6 +80,10 @@ bool GameApp::Create()
 			}
 		}
 	}
+
+	m_playerPh = simulator.CreateCharacterController();
+	m_playerPh->Warp({ 0.0f, 10.0f, -10.0f });
+
 
 	const char* vertexShaderText = R"(
 #version 330 core
@@ -183,6 +188,7 @@ void GameApp::Destroy()
 	m_planePh.reset();
 	for (size_t i = 0; i < m_boxPh.size(); i++)
 		m_boxPh[i].reset();
+	m_playerPh.reset();
 
 	GetPhysicsSimulator().Destroy();
 	GetInput().SetMouseLock(false);
@@ -214,7 +220,7 @@ void GameApp::Render()
 	renderSystem.SetUniform(m_uniformLightDirection, m_camera.GetNormalizedViewVector());
 	renderSystem.Draw(m_geom->vao);
 
-	renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 1, 100)));
+	renderSystem.SetUniform(m_uniformWorldMatrix, m_planePh->GetMatrix() * glm::scale(glm::mat4(1.0f), glm::vec3(100, 0, 100)));
 	GetGraphicsSystem().Draw(m_plane);
 
 	for (size_t i = 0; i < m_boxPh.size(); i++)
@@ -222,11 +228,18 @@ void GameApp::Render()
 		renderSystem.SetUniform(m_uniformWorldMatrix, m_boxPh[i]->GetMatrix());
 		GetGraphicsSystem().Draw(m_box);
 	}
+
+	// character
+	renderSystem.Bind(m_textureRed, 0);
+	renderSystem.SetUniform(m_uniformWorldMatrix, m_playerPh->GetMatrix());
+	GetGraphicsSystem().Draw(m_capsule);
 }
 //-----------------------------------------------------------------------------
 void GameApp::Update(float deltaTime)
 {
-	if( GetInput().IsKeyDown(Input::KEY_ESCAPE) )
+	Input& input = GetInput();
+
+	if(input.IsKeyDown(Input::KEY_ESCAPE) )
 	{
 		ExitRequest();
 		return;
@@ -235,16 +248,32 @@ void GameApp::Update(float deltaTime)
 	GetPhysicsSimulator().Update(deltaTime);
 
 	const float mouseSensitivity = 10.0f * deltaTime;
-	const float moveSpeed = 10.0f * deltaTime;
-	const glm::vec3 oldCameraPos = m_camera.position;
-
-	if (GetInput().IsKeyDown(Input::KEY_W)) m_camera.MoveBy(moveSpeed);
-	if (GetInput().IsKeyDown(Input::KEY_S)) m_camera.MoveBy(-moveSpeed);
-	if (GetInput().IsKeyDown(Input::KEY_A)) m_camera.StrafeBy(moveSpeed);
-	if (GetInput().IsKeyDown(Input::KEY_D)) m_camera.StrafeBy(-moveSpeed);
-
-	glm::vec2 delta = GetInput().GetMouseDeltaPosition();
+	glm::vec2 delta = input.GetMouseDeltaPosition();
 	if (delta.x != 0.0f)  m_camera.RotateLeftRight(delta.x * mouseSensitivity);
 	if (delta.y != 0.0f)  m_camera.RotateUpDown(-delta.y * mouseSensitivity);
+
+	const float moveSpeed = 50.0f * deltaTime;
+	const glm::vec3 forwardVector = m_camera.GetForwardVector();
+	const glm::vec3 rightVector = m_camera.GetRightVector();
+
+	glm::vec3 walkDirection(0, 0, 0);
+	if (input.IsKeyDown(Input::KEY_W)) walkDirection += forwardVector;
+	if (input.IsKeyDown(Input::KEY_S)) walkDirection -= forwardVector;
+	if (input.IsKeyDown(Input::KEY_A)) walkDirection -= rightVector;
+	if (input.IsKeyDown(Input::KEY_D)) walkDirection += rightVector;
+	if (walkDirection != glm::vec3(0.0f)) walkDirection = glm::normalize(walkDirection);
+	walkDirection *= moveSpeed;
+	m_playerPh->Walk(walkDirection);
+
+	bool onGround = m_playerPh->IsGround();
+	if (GetInput().IsKeyDown(Input::KEY_SPACE) && onGround)
+		m_playerPh->Jump();
+
+	m_camera.Teleport(m_playerPh->GetPosition() + glm::vec3(0.0f, 1.7f, 0.0f));
+
+	//if (GetInput().IsKeyDown(Input::KEY_W)) m_camera.MoveBy(moveSpeed);
+	//if (GetInput().IsKeyDown(Input::KEY_S)) m_camera.MoveBy(-moveSpeed);
+	//if (GetInput().IsKeyDown(Input::KEY_A)) m_camera.StrafeBy(moveSpeed);
+	//if (GetInput().IsKeyDown(Input::KEY_D)) m_camera.StrafeBy(-moveSpeed);
 }
 //-----------------------------------------------------------------------------
